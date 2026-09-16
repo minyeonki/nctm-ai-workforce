@@ -12,7 +12,7 @@ nctm-hub에서 분리한 독립 실행 프로젝트입니다. **저장소와 배
   **이미 nctm-hub의 프로덕션 Supabase에 적용되어 있으므로, 같은 프로젝트를 계속 쓰는 한 다시 실행할 필요 없습니다.**
   새 Supabase 프로젝트로 완전히 독립시킬 경우에만 이 파일들로 스키마를 재현하세요 (단, `governance.actor` 등 nctm-hub 쪽 다른 스키마에 대한 참조가 있어 별도 조정이 필요합니다).
 
-## 설정
+## 설정 
 
 1. `.env.example`을 `.env.local`로 복사
 2. nctm-hub와 동일한 Supabase URL / Publishable Key 입력 (Vercel의 nctm-hub 프로젝트 환경변수에서 그대로 복사 가능)
