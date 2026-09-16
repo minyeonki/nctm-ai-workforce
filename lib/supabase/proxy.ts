@@ -4,8 +4,8 @@ import { NextResponse, type NextRequest } from "next/server";
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
-    ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    ?? process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
   const loginPath = "/ai-workforce/command/login";
 
@@ -36,8 +36,6 @@ export async function updateSession(request: NextRequest) {
     const { data } = await supabase.auth.getUser();
     hasValidSession = Boolean(data?.user);
   } catch {
-    // Treat any verification failure (bad/expired token, network hiccup) as "not signed in"
-    // rather than letting it crash the request.
     hasValidSession = false;
   }
 
