@@ -34,7 +34,16 @@ export default async function CommandDeskPage() {
   if (!user) redirect("/ai-workforce/command/login");
 
   const { data, error } = await supabase.rpc("get_governance_command_desk_v01");
-  const desk = data as CommandDesk | null;
+  const raw = data as Partial<CommandDesk> | null;
+  const desk: CommandDesk | null = raw
+    ? {
+        actor: raw.actor ?? { actorKey: "unknown", displayName: user.email ?? "unknown", permissionTier: 0 },
+        agents: raw.agents ?? [],
+        approvals: raw.approvals ?? [],
+        executions: raw.executions ?? [],
+        verifications: raw.verifications ?? [],
+      }
+    : null;
 
   if (error || !desk) {
     return (
