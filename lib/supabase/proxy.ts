@@ -7,14 +7,14 @@ export async function updateSession(request: NextRequest) {
   const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
     ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  // Missing auth configuration must not silently open protected routes.
+  const loginPath = "/ai-workforce/command/login";
+
   if (!url || !publishableKey) {
-    if (request.nextUrl.pathname.startsWith("/login")
-      || request.nextUrl.pathname.startsWith("/unauthorized")
-      || request.nextUrl.pathname.startsWith("/ai-workforce/command/login")) {
+    if (request.nextUrl.pathname.startsWith(loginPath)
+      || request.nextUrl.pathname.startsWith("/unauthorized")) {
       return response;
     }
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(new URL(loginPath, request.url));
   }
 
   const supabase = createServerClient(url, publishableKey, {
@@ -31,17 +31,12 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  // Validate/refresh immediately after client creation; do not trust getSession().
   const { data } = await supabase.auth.getClaims();
   const pathname = request.nextUrl.pathname;
-  const publicPath = pathname.startsWith("/login")
-    || pathname.startsWith("/unauthorized")
-    || pathname.startsWith("/ai-workforce/command/login");
+  const publicPath = pathname.startsWith(loginPath)
+    || pathname.startsWith("/unauthorized");
 
   if (!data?.claims && !publicPath) {
-    const loginPath = pathname.startsWith("/ai-workforce/command")
-      ? "/ai-workforce/command/login"
-      : "/login";
     return NextResponse.redirect(new URL(loginPath, request.url));
   }
   return response;
