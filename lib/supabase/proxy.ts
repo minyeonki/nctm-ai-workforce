@@ -31,14 +31,22 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  const { data } = await supabase.auth.getClaims();
+  let hasValidSession = false;
+  try {
+    const { data } = await supabase.auth.getUser();
+    hasValidSession = Boolean(data?.user);
+  } catch {
+    // Treat any verification failure (bad/expired token, network hiccup) as "not signed in"
+    // rather than letting it crash the request.
+    hasValidSession = false;
+  }
+
   const pathname = request.nextUrl.pathname;
   const publicPath = pathname.startsWith(loginPath)
     || pathname.startsWith("/unauthorized");
 
-  if (!data?.claims && !publicPath) {
+  if (!hasValidSession && !publicPath) {
     return NextResponse.redirect(new URL(loginPath, request.url));
   }
   return response;
 }
-
